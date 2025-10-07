@@ -2,8 +2,9 @@ FROM php:8.2-apache
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
-    git curl zip unzip libpq-dev libzip-dev \
-    && docker-php-ext-install pdo pdo_pgsql zip
+    git curl zip unzip libzip-dev \
+    nodejs npm \
+    && docker-php-ext-install pdo zip
 
 # Enable Apache rewrite
 RUN a2enmod rewrite
@@ -25,7 +26,8 @@ RUN composer install --no-dev --optimize-autoloader
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html
 
-RUN php artisan config:clear && php artisan migrate --force && echo "✅ Migrations done"
+# Clear config cache
+RUN php artisan config:clear
 
 
 # Expose port

@@ -66,11 +66,16 @@
                         </audio>
                     </div>
                 </div>
-                <div class="bg-[#fff2f2] dark:bg-[#1B2C3A] relative lg:-ml-px -mb-px lg:mb-0 rounded-t-lg lg:rounded-t-none lg:rounded-r-lg aspect-[335/376] lg:aspect-auto w-full lg:w-[438px] shrink-0 overflow-hidden">
+                <div class="bg-[#fff2f2] dark:bg-[#1B2C3A] relative lg:-ml-px -mb-px lg:mb-0 rounded-t-lg lg:rounded-t-none lg:rounded-r-lg aspect-[335/376] lg:aspect-auto w-full lg:w-[438px] shrink-0 overflow-hidden flex flex-col">
                     <div id="translated_text_display" class="p-6 lg:p-20 text-gray-800 dark:text-gray-200 text-lg">
                         <!-- Translated text will appear here -->
                         <p class="text-2xl font-medium mb-2">Translated Text:</p>
                         <p class="text-gray-600 dark:text-gray-400">...</p>
+                    </div>
+                    <div class="mt-auto text-sm text-gray-600 dark:text-gray-400 text-center p-6 lg:p-20">
+                        <p>Created by M Naeem Akram</p>
+                        <a href="https://github.com/naeemakram4/" class="text-gray-400 hover:underline underline">GitHub Profile</a> | 
+                        <a href="https://github.com/naeemakram4/vocalizer" class="text-gray-400 hover:underline underline">Code Repository</a>
                     </div>
                 </div>
             </main>

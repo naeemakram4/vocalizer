@@ -11,6 +11,9 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
 
+        <!-- Favicon -->
+        <link rel="icon" href="{{ asset('images/favicon.png') }}" type="image/png">
+
         <!-- Styles / Scripts -->
         @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
             @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -19,40 +22,15 @@
             {{-- Or, if a CDN is strictly preferred, replace @vite with the CDN link for TailwindCSS. --}}
         @endif
     </head>
-    <body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
-        <header class="w-full lg:max-w-4xl max-w-[335px] text-sm mb-6 not-has-[nav]:hidden">
-            @if (Route::has('login'))
-                <nav class="flex items-center justify-end gap-4">
-                    @auth
-                        <a
-                            href="{{ url('/dashboard') }}"
-                            class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal"
-                        >
-                            Dashboard
-                        </a>
-                    @else
-                        <a
-                            href="{{ route('login') }}"
-                            class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] text-[#1b1b18] border border-transparent hover:border-[#19140035] dark:hover:border-[#3E3E3A] rounded-sm text-sm leading-normal"
-                        >
-                            Log in
-                        </a>
+    <body class="bg-[#FDFDFC] dark:bg-[#1a1a1a] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
+        <div class="flex flex-col items-center justify-center">
+            <img src="{{ asset('images/logo.png') }}" alt="Vocalizer Logo" class="h-40 mb-4">
+        </div>
 
-                        @if (Route::has('register'))
-                            <a
-                                href="{{ route('register') }}"
-                                class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
-                                Register
-                            </a>
-                        @endif
-                    @endauth
-                </nav>
-            @endif
-        </header>
         <div class="flex items-center justify-center w-full transition-opacity opacity-100 duration-750 lg:grow starting:opacity-0">
             <main class="flex max-w-[335px] w-full flex-col-reverse lg:max-w-4xl lg:flex-row">
                 <div class="text-[13px] leading-[20px] flex-1 p-6 pb-12 lg:p-20 bg-white dark:bg-[#161615] dark:text-[#EDEDEC] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-bl-lg rounded-br-lg lg:rounded-tl-lg lg:rounded-br-none">
-                    <h1 class="mb-4 text-2xl font-medium">Text-to-Speach App</h1>
+                    <h1 class="mb-4 text-2xl font-medium">Text-to-Speech App</h1>
 
                     <form id="text-to-speech-form" class="space-y-4">
                         <div class="">
@@ -88,8 +66,12 @@
                         </audio>
                     </div>
                 </div>
-                <div class="bg-[#fff2f2] dark:bg-[#1D0002] relative lg:-ml-px -mb-px lg:mb-0 rounded-t-lg lg:rounded-t-none lg:rounded-r-lg aspect-[335/376] lg:aspect-auto w-full lg:w-[438px] shrink-0 overflow-hidden">
-
+                <div class="bg-[#fff2f2] dark:bg-[#1B2C3A] relative lg:-ml-px -mb-px lg:mb-0 rounded-t-lg lg:rounded-t-none lg:rounded-r-lg aspect-[335/376] lg:aspect-auto w-full lg:w-[438px] shrink-0 overflow-hidden">
+                    <div id="translated_text_display" class="p-6 lg:p-20 text-gray-800 dark:text-gray-200 text-lg">
+                        <!-- Translated text will appear here -->
+                        <p class="text-2xl font-medium mb-2">Translated Text:</p>
+                        <p class="text-gray-600 dark:text-gray-400">...</p>
+                    </div>
                 </div>
             </main>
         </div>
@@ -101,6 +83,7 @@
             const languageSelect = document.getElementById('language_select');
             const audioPlayer = document.getElementById('audio_player');
             const messageDiv = document.getElementById('message');
+            const translatedTextDisplay = document.getElementById('translated_text_display');
 
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -108,6 +91,7 @@
                 messageDiv.textContent = ''; // Clear previous messages
                 audioPlayer.src = ''; // Clear previous audio
                 audioPlayer.pause();
+                translatedTextDisplay.innerHTML = '<p class="font-semibold mb-2">Translated Text:</p><p class="text-gray-600 dark:text-gray-400">...</p>'; // Clear previous translated text
 
                 const text = textInput.value;
                 const language = languageSelect.value;
@@ -132,6 +116,12 @@
                         audioPlayer.play();
                         messageDiv.textContent = 'Translated and speech generated successfully!';
                         messageDiv.className = 'mt-4 text-sm font-medium text-green-600 dark:text-green-400';
+
+                        // Display the translated text
+                        if (response.data.translated_text) {
+                            translatedTextDisplay.innerHTML = `<p class="font-semibold mb-2">Translated Text:</p><p class="text-gray-800 dark:text-gray-200">${response.data.translated_text}</p>`;
+                        }
+
                     } else {
                         messageDiv.textContent = 'No audio content received.';
                         messageDiv.className = 'mt-4 text-sm font-medium text-red-600 dark:text-red-400';

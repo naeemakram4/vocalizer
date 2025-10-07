@@ -8,8 +8,8 @@ The primary goal of this project is to demonstrate a basic understanding of full
 ## Features
 -   Enter text in English.
 -   Select a target language from a dropdown (English, Spanish, French, German, Italian, Japanese).
--   Translate the text using the Google Cloud Translation API.
--   Generate speech for the translated text using the Google Cloud Text-to-Speech API.
+-   Translate the text using the **MyMemory Translation API**.
+-   Generate speech for the translated text using the **VoiceRSS Text-to-Speech API**.
 -   Play the generated audio directly in the browser.
 -   Basic error handling for API calls and user input.
 
@@ -17,8 +17,8 @@ The primary goal of this project is to demonstrate a basic understanding of full
 -   **Backend:** Laravel (PHP Framework)
 -   **Frontend:** HTML, TailwindCSS (for basic styling provided by Laravel's default setup), JavaScript (Axios for AJAX)
 -   **APIs:**
-    -   Google Cloud Translation API
-    -   Google Cloud Text-to-Speech API
+    -   MyMemory Translation API
+    -   VoiceRSS Text-to-Speech API
 
 ## Setup Instructions (Local Development)
 
@@ -46,24 +46,25 @@ Generate an application key:
 php artisan key:generate
 ```
 
-### 4. Configure Google Cloud API Key
-To use the translation and text-to-speech services, you need a Google Cloud API key. 
+### 4. Configure API Keys (MyMemory and VoiceRSS)
+To use the translation and text-to-speech services, you need API keys from MyMemory and VoiceRSS.
 
-1.  Go to the [Google Cloud Console](https://console.cloud.google.com/).
-2.  Create a new project or select an existing one.
-3.  Navigate to "APIs & Services" > "Dashboard".
-4.  Enable the "Cloud Translation API" and "Cloud Text-to-Speech API".
-5.  Navigate to "APIs & Services" > "Credentials".
-6.  Click "CREATE CREDENTIALS" > "API key".
-7.  Copy the generated API key.
+1.  **Get MyMemory API Key:**
+    *   Go to [MyMemory Translated](https://mymemory.translated.net/doc/spec.php).
+    *   Sign up for a free account to obtain your API key. (For very basic usage, it might work without a key, but a key increases limits and reliability.)
 
-Once you have your API key, open your `.env` file and add the following line, replacing `YOUR_API_KEY_HERE` with your actual key:
+2.  **Get VoiceRSS API Key:**
+    *   Go to [VoiceRSS Text-to-Speech API](http://www.voicerss.org/api/).
+    *   Click on "Get FREE API key" and complete the registration process.
 
+Once you have your API keys, open your `.env` file and add the following lines, replacing `YOUR_MYMEMORY_API_KEY_HERE` and `YOUR_VOICERSS_API_KEY_HERE` with your actual keys:
+
+```dotenv
+MYMEMORY_API_KEY=YOUR_MYMEMORY_API_KEY_HERE
+VOICERSS_API_KEY=YOUR_VOICERSS_API_KEY_HERE
 ```
-GOOGLE_CLOUD_API_KEY=YOUR_API_KEY_HERE
-```
 
-**Security Note:** For production environments, it is highly recommended to restrict your API key to only allow requests from your deployed application's URL (HTTP referrers) and/or by IP address to prevent unauthorized use.
+**Security Note:** Always keep your API keys secure and never commit them directly to your version control system. For production deployments, ensure these are configured as environment variables in your hosting platform.
 
 ### 5. Run Database Migrations (if applicable)
 Although this project doesn't currently use a database for its core functionality, a typical Laravel setup involves migrations. If you add features requiring a database (e.g., translation history), you would run:
@@ -97,7 +98,7 @@ Open your browser and visit `http://127.0.0.1:8000` (or the address provided in 
 To deploy this application, you will need a hosting environment that supports PHP and Laravel (e.g., a VPS, shared hosting with cPanel, Heroku, DigitalOcean App Platform, Render, etc.). The specific steps will vary based on your chosen platform, but generally involve:
 1.  Uploading your project files.
 2.  Configuring your web server (Nginx/Apache) to point to the `public` directory.
-3.  Setting up environment variables (especially `APP_ENV`, `APP_DEBUG`, `APP_KEY`, and `GOOGLE_CLOUD_API_KEY`).
+3.  Setting up environment variables (especially `APP_ENV`, `APP_DEBUG`, `APP_KEY`, `MYMEMORY_API_KEY`, and `VOICERSS_API_KEY`).
 4.  Running `composer install --no-dev` and `php artisan optimize` (or `php artisan config:cache` and `php artisan route:cache`).
 5.  Running `npm run build` to compile frontend assets for production.
 

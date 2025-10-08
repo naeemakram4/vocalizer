@@ -30,11 +30,11 @@ RUN npm install && npm run build
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html
 
-# Optimize Laravel
-RUN php artisan optimize
-
 # Clear config cache
 RUN php artisan config:clear
+
+# Optimize Laravel
+RUN php artisan optimize
 
 
 # Expose port

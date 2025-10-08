@@ -20,8 +20,9 @@ COPY . /var/www/html
 WORKDIR /var/www/html
 
 # Install Composer
+ENV COMPOSER_ALLOW_SUPERUSER=1
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
 # Build frontend assets
 RUN npm install && npm run build

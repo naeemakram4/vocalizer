@@ -23,6 +23,9 @@ WORKDIR /var/www/html
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-dev --optimize-autoloader
 
+# Build frontend assets
+RUN npm install && npm run build
+
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html
 

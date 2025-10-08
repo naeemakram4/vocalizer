@@ -28,5 +28,7 @@ class AppServiceProvider extends ServiceProvider
             Request::HEADER_X_FORWARDED_PROTO | 
             Request::HEADER_X_FORWARDED_AWS_ELB
         );
+        
+        \URL::forceScheme('https');
     }
 }

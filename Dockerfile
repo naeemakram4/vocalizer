@@ -30,14 +30,10 @@ RUN npm install && npm run build
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html
 
-# Clear config cache
-RUN php artisan config:clear
-
-# Optimize Laravel
-RUN php artisan optimize
-
 
 # Expose port
 EXPOSE 80
 
-CMD ["apache2-foreground"]
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+CMD ["entrypoint.sh"]

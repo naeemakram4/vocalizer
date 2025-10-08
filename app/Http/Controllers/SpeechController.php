@@ -25,6 +25,9 @@ class SpeechController extends Controller
         $myMemoryApiKey = env('MYMEMORY_API_KEY');
         $voiceRSSApiKey = env('VOICERSS_API_KEY');
 
+        Log::info('MYMEMORY_API_KEY loaded: ' . (empty($myMemoryApiKey) ? 'EMPTY' : '*****'));
+        Log::info('VOICERSS_API_KEY loaded: ' . (empty($voiceRSSApiKey) ? 'EMPTY' : '*****'));
+
         if (!$myMemoryApiKey) {
             Log::error('MYMEMORY_API_KEY is not set in .env');
             return response()->json(['error' => 'Server configuration error: MyMemory API key missing.'], 500);
@@ -37,11 +40,16 @@ class SpeechController extends Controller
 
         try {
             // 1. Translate the text using MyMemory API
-            $translationResponse = Http::get('http://api.mymemory.translated.net/get', [
+            $myMemoryUrl = 'http://api.mymemory.translated.net/get';
+            $myMemoryQueryParams = [
                 'q' => $text,
                 'langpair' => $sourceLanguage . '|' . $targetLanguage,
                 'key' => $myMemoryApiKey, // Optional, for higher limits
-            ]);
+            ];
+
+            Log::info('MyMemory Request URL: ' . $myMemoryUrl . '?' . http_build_query($myMemoryQueryParams));
+
+            $translationResponse = Http::get($myMemoryUrl, $myMemoryQueryParams);
 
             $rawMyMemoryResponse = $translationResponse->body();
             Log::info('MyMemory Raw Response:' . $rawMyMemoryResponse);
@@ -54,6 +62,7 @@ class SpeechController extends Controller
             }
 
             $translatedText = $translationData['responseData']['translatedText'];
+            Log::info('MyMemory Translated Text: ' . $translatedText);
 
             // Aggressively sanitize translated text for VoiceRSS to ensure only valid UTF-8
             // Remove HTML tags and decode HTML entities, then sanitize UTF-8
@@ -80,7 +89,7 @@ class SpeechController extends Controller
                 'b64' => true, // Request base64 encoded audio
             ];
 
-            Log::info('VoiceRSS Request URL:' . 'http://api.voicerss.org/?' . http_build_query($voiceRssParams));
+            Log::info('VoiceRSS Request Params: ' . json_encode($voiceRssParams));
 
             $voiceRssResponse = Http::get('http://api.voicerss.org/', $voiceRssParams);
 
@@ -92,6 +101,7 @@ class SpeechController extends Controller
             // We'll rely on HTTP status codes and the presence of binary data for success/failure.
             if ($voiceRssResponse->failed() || empty($rawVoiceRssResponse) || !str_starts_with($rawVoiceRssResponse, 'ID3')) {
                 Log::error('VoiceRSS TTS API Error: Invalid or empty response received.');
+                Log::error('VoiceRSS Raw Response (on error): ' . (is_string($rawVoiceRssResponse) ? substr($rawVoiceRssResponse, 0, 500) : 'Not string data'));
                 return response()->json(['error' => 'Failed to generate speech: Invalid or empty audio received from VoiceRSS.'], 500);
             }
 
@@ -102,6 +112,7 @@ class SpeechController extends Controller
 
         } catch (\Exception $e) {
             Log::error('API Error: ' . $e->getMessage());
+            Log::error('API Error Trace: ' . $e->getTraceAsString());
             return response()->json(['error' => 'Failed to generate speech: ' . $e->getMessage()], 500);
         }
     }
